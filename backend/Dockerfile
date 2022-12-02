@@ -9,4 +9,5 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY . /code/
-CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
+RUN chmod +x /code/init/entrypoint.sh
+CMD [ "sh", "/code/init/entrypoint.sh" ]
