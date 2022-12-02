@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+
+  database:
+    build:
+      context: ./database
+    container_name: vms-database
+    environment:
+      POSTGRES_DB: vms_database
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+    ports:
+      - "5432:5432"
+    networks:
+      vms_network:
+        ipv4_address: 10.7.0.4
+
+  backend:
+    build: ./backend
+    container_name: vms-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/code
+    env_file:
+      - ./backend/.env.example
+    networks:
+      vms_network:
+        ipv4_address: 10.7.0.5
+
+  frontend:
+    build: ./frontend
+    container_name: vms-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/code
+    env_file:
+      - ./backend/.env.example
+    networks:
+      vms_network:
+        ipv4_address: 10.7.0.6
+
+networks:
+  vms_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.7.0.0/16
+          gateway: 10.7.0.1
