@@ -1,4 +1,6 @@
 from rest_framework import permissions, status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
@@ -63,7 +65,11 @@ class Login(APIView):
             auth_login(request, user)
             db_user = User.objects.get(id=request.user.id)
             serializer = UserSerializer(db_user)
-            return Response(serializer.data)
+            token, _ = Token.objects.get_or_create(user=db_user)
+            return Response({
+                'user': serializer.data,
+                'token': token.key,
+            })
 
         else:
             return HttpResponse("Invalid credentials", status=status.HTTP_401_UNAUTHORIZED)
@@ -73,16 +79,14 @@ class Logout(APIView):
     """
     API View for user logout.
     """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     swagger_tags = ['Auth']
 
     def get(self, request):
-        if request.user.is_authenticated:
-            auth_logout(request)
-            return HttpResponse("Successfully logged out!")
-        
-        else:
-            return HttpResponse("You are not logged in.")
+        request.user.auth_token.delete()
+        auth_logout(request)
+        return HttpResponse("Successfully logged out!")
 
 
 class VulnerabilityList(APIView, PageNumberPagination):
@@ -90,6 +94,7 @@ class VulnerabilityList(APIView, PageNumberPagination):
     List all vulnerabilities, or create a new one.
     """
     permissions_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     swagger_tags = ['Vulnerability']
 
     def get(self, request):
@@ -134,6 +139,7 @@ class VulnerabilityDetail(APIView):
     status or delete it (this one requires admin privileges).
     """
     permissions_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     swagger_tags = ['Vulnerability']
 
     def get_object(self, pk):
