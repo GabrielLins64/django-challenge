@@ -144,6 +144,5 @@ REST_FRAMEWORK = {
 }
 
 SWAGGER_SETTINGS = {
-    'LOGIN_URL': '/auth/login',
-    'LOGOUT_URL': '/auth/logout',
+    'USE_SESSION_AUTH': False
 }
