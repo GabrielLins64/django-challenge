@@ -1,4 +1,5 @@
-from rest_framework import permissions
+from rest_framework import permissions, status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from django.http import HttpResponse
@@ -7,11 +8,12 @@ from django.contrib.auth import (
     logout as auth_logout,
     authenticate
 )
+from django.contrib.auth.models import User
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from api.models import Vulnerability
-from api.serializers import VulnerabilitySerializer
+from api.serializers import VulnerabilitySerializer, UserSerializer
 
 
 API_DEFAULT_RESPONSE = "VMS API v1.0"
@@ -58,10 +60,12 @@ class Login(APIView):
 
         if user is not None:
             auth_login(request, user)
-            return HttpResponse("Successfully logged in!")
+            db_user = User.objects.get(id=request.user.id)
+            serializer = UserSerializer(db_user)
+            return Response(serializer.data)
 
         else:
-            return HttpResponse("Invalid credentials", status=401)
+            return HttpResponse("Invalid credentials", status=status.HTTP_401_UNAUTHORIZED)
 
 
 class Logout(APIView):
@@ -119,5 +123,5 @@ class VulnerabilityList(APIView, PageNumberPagination):
 
         if serializer.is_valid():
             serializer.save()
-            return HttpResponse(serializer.data, status=201)
-        return HttpResponse(serializer.errors, status=400)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
