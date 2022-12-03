@@ -43,6 +43,7 @@ services:
     networks:
       vms_network:
         ipv4_address: 10.7.0.6
+    command: sh -c "npm i --silent && npm start"
 
 networks:
   vms_network:

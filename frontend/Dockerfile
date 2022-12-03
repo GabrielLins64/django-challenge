@@ -15,14 +15,3 @@ RUN npm install --silent
 
 # add app
 COPY . /code
-
-# start app
-CMD if [ ${APP_ENV} = production ]; \
-    then \
-    npm i -g http-server && \
-    npm run build && \
-    cd build && \
-    hs -p 3000; \
-    else \
-    npm run start; \
-    fi
