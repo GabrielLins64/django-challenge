@@ -16,7 +16,11 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from api.models import Vulnerability
-from api.serializers import VulnerabilitySerializer, UserSerializer
+from api.serializers import (
+    VulnerabilitySerializer,
+    VulnerabilityStatusSerializer,
+    UserSerializer
+)
 
 
 API_DEFAULT_RESPONSE = "VMS API v1.0"
@@ -91,13 +95,17 @@ class Logout(APIView):
 
 class VulnerabilityList(APIView, PageNumberPagination):
     """
-    List all vulnerabilities, or create a new one.
+    API View for listing all vulnerabilities or
+    adding a brand new one.
     """
     permissions_classes = [permissions.IsAuthenticated]
     authentication_classes = [TokenAuthentication]
     swagger_tags = ['Vulnerability']
 
     def get(self, request):
+        """
+        List all vulnerabilities.
+        """
         vulnerabilities = Vulnerability.objects.all()
         result = self.paginate_queryset(vulnerabilities, request, view=self)
         serializer_context = {'request': request}
@@ -120,6 +128,9 @@ class VulnerabilityList(APIView, PageNumberPagination):
         }
     ))
     def post(self, request):
+        """
+        Create a new vulnerability.
+        """
         if not request.user.is_staff:
             return HttpResponse("Higher privileges are required", status=403)
 
@@ -135,8 +146,7 @@ class VulnerabilityList(APIView, PageNumberPagination):
 
 class VulnerabilityDetail(APIView):
     """
-    API View that show details of a Vulnerability, update its
-    status or delete it (this one requires admin privileges).
+    API View that handles a specific Vulnerability.
     """
     permissions_classes = [permissions.IsAuthenticated]
     authentication_classes = [TokenAuthentication]
@@ -149,13 +159,41 @@ class VulnerabilityDetail(APIView):
             raise Http404
 
     def get(self, request, pk):
+        """
+        Fetch details of a vulnerability.
+        """
         vulnerability = self.get_object(pk)
         serializer_context = {'request': request}
         serializer = VulnerabilitySerializer(vulnerability,
                                              context=serializer_context)
         return Response(serializer.data)
 
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'fixed': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+        }
+    ))
+    def patch(self, request, pk):
+        """
+        Update vulnerability's status (fixed or not).
+        """
+        vulnerability = self.get_object(pk)
+        serializer_context = {'request': request}
+        serializer = VulnerabilityStatusSerializer(vulnerability,
+                                                   data=request.data,
+                                                   context=serializer_context,
+                                                   partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            full_serializer = VulnerabilitySerializer(vulnerability)
+            return Response(full_serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
+        """
+        Delete a vulnerability.
+        """
         if not request.user.is_staff:
             return HttpResponse("Higher privileges are required", status=403)
 
