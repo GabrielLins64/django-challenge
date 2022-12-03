@@ -8,11 +8,11 @@ class CustomOpenAPISchemaGenerator(OpenAPISchemaGenerator):
         swagger = super().get_schema(request, public)
         swagger.tags = [
             {
-                "name": "api",
-                "description": "Main API endpoints"
+                "name": "Index",
+                "description": "API Health check and info"
             },
             {
-                "name": "auth",
+                "name": "Auth",
                 "description": "Authentication endpoints"
             },
         ]

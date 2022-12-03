@@ -6,9 +6,9 @@ from vms_backend.generators import CustomOpenAPISchemaGenerator
 
 swagger_schema_view = get_schema_view(
     openapi.Info(
-        title="VMS Documentation",
+        title="VMS API Documentation",
         default_version='v1.0',
-        description="Vulnerability Management System",
+        description="Vulnerability Management System API",
         license=openapi.License(name="MIT License"),
     ),
     public=True,
