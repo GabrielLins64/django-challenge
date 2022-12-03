@@ -15,6 +15,10 @@ class CustomOpenAPISchemaGenerator(OpenAPISchemaGenerator):
                 "name": "Auth",
                 "description": "Authentication endpoints"
             },
+            {
+                "name": "Vulnerability",
+                "description": "Vulnerability management"
+            },
         ]
 
         return swagger
