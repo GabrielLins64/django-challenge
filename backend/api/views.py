@@ -1,11 +1,17 @@
 from rest_framework import permissions
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from django.http import HttpResponse
 from django.contrib.auth import (
     login as auth_login,
     logout as auth_logout,
     authenticate
 )
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+from api.models import Vulnerability
+from api.serializers import VulnerabilitySerializer
 
 
 API_DEFAULT_RESPONSE = "VMS API v1.0"
@@ -19,7 +25,7 @@ class APIRoot(APIView):
     permission_classes = [permissions.AllowAny]
     swagger_tags = ['Index']
 
-    def get(self, request, format=None):
+    def get(self, request):
         response = API_DEFAULT_RESPONSE
 
         if request.user.is_authenticated:
@@ -36,7 +42,14 @@ class Login(APIView):
     permission_classes = [permissions.AllowAny]
     swagger_tags = ['Auth']
 
-    def post(self, request, format=None):
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'username': openapi.Schema(type=openapi.TYPE_STRING),
+            'password': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ))
+    def post(self, request):
         body = request.data
         username = body.get('username')
         password = body.get('password')
@@ -65,3 +78,46 @@ class Logout(APIView):
         
         else:
             return HttpResponse("You are not logged in.")
+
+
+class VulnerabilityList(APIView, PageNumberPagination):
+    """
+    List all vulnerabilities, or create a new one.
+    """
+    permissions_classes = [permissions.IsAuthenticated]
+    swagger_tags = ['Vulnerability']
+
+    def get(self, request):
+        vulnerabilities = Vulnerability.objects.all()
+        result = self.paginate_queryset(vulnerabilities, request, view=self)
+        serializer_context = {'request': request}
+        serializer = VulnerabilitySerializer(
+            result,
+            many=True,
+            context=serializer_context
+        )
+        return self.get_paginated_response(serializer.data)
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'asset_hostname': openapi.Schema(type=openapi.TYPE_STRING),
+            'asset_ip_address': openapi.Schema(type=openapi.TYPE_STRING),
+            'title': openapi.Schema(type=openapi.TYPE_STRING),
+            'severity': openapi.Schema(type=openapi.TYPE_STRING),
+            'cvss': openapi.Schema(type=openapi.TYPE_NUMBER),
+            'publication_date': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ))
+    def post(self, request):
+        if not request.user.is_staff:
+            return HttpResponse("Higher privileges are required", status=403)
+
+        serializer_context = {'request': request}
+        serializer = VulnerabilitySerializer(data=request.data,
+                                             context=serializer_context)
+
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(serializer.data, status=201)
+        return HttpResponse(serializer.errors, status=400)
