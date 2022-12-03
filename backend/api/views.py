@@ -16,7 +16,11 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from api.models import Vulnerability
-from api.serializers import VulnerabilitySerializer, UserSerializer
+from api.serializers import (
+    VulnerabilitySerializer,
+    VulnerabilityStatusSerializer,
+    UserSerializer
+)
 
 
 API_DEFAULT_RESPONSE = "VMS API v1.0"
@@ -163,6 +167,28 @@ class VulnerabilityDetail(APIView):
         serializer = VulnerabilitySerializer(vulnerability,
                                              context=serializer_context)
         return Response(serializer.data)
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'fixed': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+        }
+    ))
+    def patch(self, request, pk):
+        """
+        Update vulnerability's status (fixed or not).
+        """
+        vulnerability = self.get_object(pk)
+        serializer_context = {'request': request}
+        serializer = VulnerabilityStatusSerializer(vulnerability,
+                                                   data=request.data,
+                                                   context=serializer_context,
+                                                   partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            full_serializer = VulnerabilitySerializer(vulnerability)
+            return Response(full_serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         """

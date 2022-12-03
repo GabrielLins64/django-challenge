@@ -5,6 +5,9 @@ from api.models import Vulnerability
 
 
 class VulnerabilitySerializer(serializers.ModelSerializer):
+    """
+    Vulnerability serializer for creating and retrieving data;
+    """
     publication_date = fields.DateField(input_formats=['%Y-%m-%d'])
 
     class Meta:
@@ -21,7 +24,21 @@ class VulnerabilitySerializer(serializers.ModelSerializer):
         ]
 
 
+class VulnerabilityStatusSerializer(serializers.ModelSerializer):
+    """
+    Vulnerability status for updating only the vulnerability's status.
+    """
+    fixed = serializers.BooleanField(required=True)
+
+    class Meta:
+        model = Vulnerability
+        fields = ['fixed']
+
+
 class UserSerializer(serializers.ModelSerializer):
+    """
+    User serializer for fetching user data
+    """
     class Meta:
         model = User
         fields = [
