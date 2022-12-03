@@ -9,6 +9,7 @@ from django.contrib.auth import (
     authenticate
 )
 from django.contrib.auth.models import User
+from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
@@ -125,3 +126,33 @@ class VulnerabilityList(APIView, PageNumberPagination):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VulnerabilityDetail(APIView):
+    """
+    API View that show details of a Vulnerability, update its
+    status or delete it (this one requires admin privileges).
+    """
+    permissions_classes = [permissions.IsAuthenticated]
+    swagger_tags = ['Vulnerability']
+
+    def get_object(self, pk):
+        try:
+            return Vulnerability.objects.get(pk=pk)
+        except Vulnerability.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        vulnerability = self.get_object(pk)
+        serializer_context = {'request': request}
+        serializer = VulnerabilitySerializer(vulnerability,
+                                             context=serializer_context)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        if not request.user.is_staff:
+            return HttpResponse("Higher privileges are required", status=403)
+
+        vulnerability = self.get_object(pk)
+        vulnerability.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

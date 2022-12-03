@@ -10,6 +10,7 @@ class VulnerabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Vulnerability
         fields = [
+            'id',
             'asset_hostname',
             'asset_ip_address',
             'title',
