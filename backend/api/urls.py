@@ -3,6 +3,6 @@ from api import views
 
 urlpatterns = [
     path('', views.APIRoot.as_view()),
-    path('login/', views.LoginView.as_view()),
-    path('logout/', views.LogoutView.as_view()),
+    path('login/', views.Login.as_view()),
+    path('logout/', views.Logout.as_view()),
 ]

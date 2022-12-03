@@ -1,6 +1,5 @@
 from rest_framework import permissions
 from rest_framework.views import APIView
-from rest_framework.decorators import permission_classes
 from django.http import HttpResponse
 from django.contrib.auth import (
     login as auth_login,
@@ -29,7 +28,7 @@ class APIRoot(APIView):
         return HttpResponse(response)
 
 
-class LoginView(APIView):
+class Login(APIView):
     """
     API View for users login. Requires a json body with the
     properties "username" and "password".
@@ -52,7 +51,7 @@ class LoginView(APIView):
             return HttpResponse("Invalid credentials", status=401)
 
 
-class LogoutView(APIView):
+class Logout(APIView):
     """
     API View for user logout.
     """
