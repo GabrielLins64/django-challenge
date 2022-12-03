@@ -9,6 +9,7 @@ class Vulnerability(models.Model):
     severity = models.CharField(max_length=10)
     cvss = models.FloatField()
     publication_date = models.DateField(default=timezone.now)
+    fixed = models.BooleanField(default=False)
 
 
 class CVSSRatings(models.Model):

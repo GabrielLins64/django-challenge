@@ -17,6 +17,7 @@ class VulnerabilitySerializer(serializers.ModelSerializer):
             'severity',
             'cvss',
             'publication_date',
+            'fixed',
         ]
 
 
