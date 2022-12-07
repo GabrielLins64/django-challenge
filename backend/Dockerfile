@@ -12,5 +12,6 @@ COPY . /code/
 RUN apt-get update
 RUN apt-get install -y dos2unix
 RUN dos2unix /code/init/entrypoint.sh
+RUN dos2unix /code/init/createsuperuser.py
 RUN chmod +x /code/init/entrypoint.sh
 CMD [ "sh", "/code/init/entrypoint.sh" ]
