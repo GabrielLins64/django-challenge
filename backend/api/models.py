@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 
 class Vulnerability(models.Model):
@@ -7,8 +6,8 @@ class Vulnerability(models.Model):
     asset_ip_address = models.GenericIPAddressField()
     title = models.CharField(max_length=300)
     severity = models.CharField(max_length=10)
-    cvss = models.FloatField()
-    publication_date = models.DateField(default=timezone.now)
+    cvss = models.FloatField(blank=True, null=True)
+    publication_date = models.DateField(blank=True, null=True)
     fixed = models.BooleanField(default=False)
 
 

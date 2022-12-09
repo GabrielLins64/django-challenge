@@ -8,7 +8,9 @@ class VulnerabilitySerializer(serializers.ModelSerializer):
     """
     Vulnerability serializer for creating and retrieving data;
     """
-    publication_date = fields.DateField(input_formats=['%Y-%m-%d'])
+    publication_date = fields.DateField(input_formats=['%Y-%m-%d'],
+                                        required=False,
+                                        allow_null=True)
 
     class Meta:
         model = Vulnerability
