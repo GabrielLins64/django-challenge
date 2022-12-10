@@ -113,9 +113,51 @@ class VulnerabilityList(APIView, PageNumberPagination):
         openapi.Parameter(
             'page',
             in_=openapi.IN_QUERY,
-            description="Pagination control",
+            description="(Optional) Pagination control",
             type=openapi.TYPE_INTEGER
-        )
+        ),
+        openapi.Parameter(
+            'asset_hostname',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'title',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'severity',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'asset_ip_address',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'publication_date',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'fixed',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_BOOLEAN,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'order_by',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Order by column. Example: ?order_by=id,desc"
+        ),
     ])
     def get(self, request):
         """
