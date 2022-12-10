@@ -13,6 +13,7 @@ from django.contrib.auth import (
     authenticate
 )
 from django.contrib.auth.models import User
+from django.core.exceptions import FieldError
 from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -26,6 +27,7 @@ from api.serializers import (
     VulnerabilityCSVSerializer,
     RequestAuditSerializer,
 )
+from api.filters import VulnerabilitySearchFilter
 
 
 API_DEFAULT_RESPONSE = "VMS API v1.0"
@@ -119,8 +121,14 @@ class VulnerabilityList(APIView, PageNumberPagination):
         """
         List all vulnerabilities.
         """
-        vulnerabilities = Vulnerability.objects.all()
-        result = self.paginate_queryset(vulnerabilities, request, view=self)
+        vulnerabilities = VulnerabilitySearchFilter.find(request.query_params)
+
+        try:
+            result = self.paginate_queryset(vulnerabilities, request, view=self)
+        except FieldError as err:
+            return Response(err.__str__(),
+                            status=status.HTTP_400_BAD_REQUEST)
+
         serializer_context = {'request': request}
         serializer = VulnerabilitySerializer(
             result,
