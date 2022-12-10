@@ -235,6 +235,9 @@ class UploadVulnerabilitiesCSV(APIView):
         """
         POST a CSV file with vulnerabilities.
         """
+        if not request.user.is_staff:
+            return HttpResponse("Higher privileges are required", status=403)
+
         serializer_context = {'request': request}
         file_serializer = FileUploadSerializer(data=request.data,
                                           context=serializer_context)
