@@ -13,6 +13,7 @@ from django.contrib.auth import (
     authenticate
 )
 from django.contrib.auth.models import User
+from django.core.exceptions import FieldError
 from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -26,6 +27,7 @@ from api.serializers import (
     VulnerabilityCSVSerializer,
     RequestAuditSerializer,
 )
+from api.filters import VulnerabilitySearchFilter
 
 
 API_DEFAULT_RESPONSE = "VMS API v1.0"
@@ -111,16 +113,64 @@ class VulnerabilityList(APIView, PageNumberPagination):
         openapi.Parameter(
             'page',
             in_=openapi.IN_QUERY,
-            description="Pagination control",
+            description="(Optional) Pagination control",
             type=openapi.TYPE_INTEGER
-        )
+        ),
+        openapi.Parameter(
+            'asset_hostname',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'title',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'severity',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'asset_ip_address',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'publication_date',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'fixed',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_BOOLEAN,
+            description="(Optional) Query filter parameter"
+        ),
+        openapi.Parameter(
+            'order_by',
+            openapi.IN_QUERY,
+            type=openapi.TYPE_STRING,
+            description="(Optional) Order by column. Example: ?order_by=id,desc"
+        ),
     ])
     def get(self, request):
         """
         List all vulnerabilities.
         """
-        vulnerabilities = Vulnerability.objects.all()
-        result = self.paginate_queryset(vulnerabilities, request, view=self)
+        vulnerabilities = VulnerabilitySearchFilter.find(request.query_params)
+
+        try:
+            result = self.paginate_queryset(vulnerabilities, request, view=self)
+        except FieldError as err:
+            return Response(err.__str__(),
+                            status=status.HTTP_400_BAD_REQUEST)
+
         serializer_context = {'request': request}
         serializer = VulnerabilitySerializer(
             result,
