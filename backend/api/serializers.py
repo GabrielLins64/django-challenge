@@ -1,13 +1,14 @@
-from rest_framework import serializers, fields
-from django.contrib.auth.models import User
-import io, csv
-
 from api.models import Vulnerability
+from django.contrib.auth.models import User
+from rest_framework import serializers, fields
+import csv
+import io
+
 
 
 class VulnerabilitySerializer(serializers.ModelSerializer):
     """
-    Vulnerability serializer for creating and retrieving data;
+    Vulnerability serializer for creating and retrieving data.
     """
     publication_date = fields.DateField(input_formats=['%Y-%m-%d'],
                                         required=False,
@@ -55,7 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class FileUploadSerializer(serializers.Serializer):
     """
-    File serializer for retrieving file form a POST request
+    File serializer for retrieving file form a POST request.
     """
     file = serializers.FileField()
 
@@ -68,17 +69,25 @@ class VulnerabilityCSVSerializer:
     Vulnerabilities CSV serializer that validates each CSV row
     in order to ensure the proper format of the Vulnerability.
     """
-    def __init__(self, file, context: dict):
+    def __init__(self, file, context: dict = {}):
         decoded_file = file.read().decode()
         io_string = io.StringIO(decoded_file)
 
-        self.reader = csv.reader(io_string)
-        next(self.reader, None)
         self.vulnerabilities = []
         self.context = context
         self.errors = []
+        self.filename = file.name
+        self.reader = csv.reader(io_string)
+        next(self.reader, None)
 
-    def is_valid(self, raise_exception: bool = False):
+    def is_valid(self):
+        """
+        Checks if the inserted file is valid.
+        """
+        if not self.filename.endswith('.csv'):
+            self.errors.append("Wrong file type. Must be CSV.")
+            return False
+
         for row in self.reader:
             data = {
                 "asset_hostname": row[0],
@@ -94,15 +103,14 @@ class VulnerabilityCSVSerializer:
                 self.vulnerabilities.append(serializer.data)
             else:
                 self.errors.append(serializer.errors)
-
-                if raise_exception:
-                    raise Exception(self.errors)
-                else:
-                    return False
+                return False
 
         return True
 
     def save(self):
+        """
+        Save all vulnerabilities into database.
+        """
         for data in self.vulnerabilities:
             vulnerability = Vulnerability(**data)
             vulnerability.save()
