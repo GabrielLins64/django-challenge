@@ -17,13 +17,14 @@ from django.http import Http404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from api.models import Vulnerability
+from api.models import Vulnerability, RequestAudit
 from api.serializers import (
     VulnerabilitySerializer,
     VulnerabilityStatusSerializer,
     UserSerializer,
     FileUploadSerializer,
-    VulnerabilityCSVSerializer
+    VulnerabilityCSVSerializer,
+    RequestAuditSerializer,
 )
 
 
@@ -252,3 +253,37 @@ class UploadVulnerabilitiesCSV(APIView):
             return Response("File successfully imported", status=status.HTTP_201_CREATED)
 
         return Response(vulnerability_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RequestAuditList(APIView, PageNumberPagination):
+    """
+    API View for listing the request audit log.
+    """
+    permissions_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    swagger_tags = ['Audit Log']
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            'page',
+            in_=openapi.IN_QUERY,
+            description="Pagination control",
+            type=openapi.TYPE_INTEGER
+        )
+    ])
+    def get(self, request):
+        """
+        List the request audit log.
+        """
+        if not request.user.is_staff:
+            return HttpResponse("Higher privileges are required", status=403)
+
+        requests = RequestAudit.objects.all()
+        result = self.paginate_queryset(requests, request, view=self)
+        serializer_context = {'request': request}
+        serializer = RequestAuditSerializer(
+            result,
+            many=True,
+            context=serializer_context
+        )
+        return self.get_paginated_response(serializer.data)

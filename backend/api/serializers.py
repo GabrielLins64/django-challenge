@@ -1,4 +1,4 @@
-from api.models import Vulnerability
+from api.models import Vulnerability, RequestAudit
 from django.contrib.auth.models import User
 from rest_framework import serializers, fields
 import csv
@@ -114,3 +114,14 @@ class VulnerabilityCSVSerializer:
         for data in self.vulnerabilities:
             vulnerability = Vulnerability(**data)
             vulnerability.save()
+
+
+class RequestAuditSerializer(serializers.ModelSerializer):
+    """
+    Request audit log serializer for fetching request log data
+    """
+    user = serializers.CharField()
+
+    class Meta:
+        model = RequestAudit
+        fields = '__all__'
