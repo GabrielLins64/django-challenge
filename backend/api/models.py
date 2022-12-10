@@ -19,7 +19,7 @@ class CVSSRatings(models.Model):
 
 
 class RequestAudit(models.Model):
-    endpoint = models.CharField(max_length=100, null=True)
+    endpoint = models.CharField(max_length=300, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     response_code = models.PositiveSmallIntegerField()
     method = models.CharField(max_length=10, null=True)
