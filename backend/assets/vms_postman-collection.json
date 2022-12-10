@@ -174,7 +174,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"asset_hostname\": \"WORKSTATION-1\",\n  \"asset_ip_address\": \"172.18.0.1\",\n  \"title\": \"VMware ESXi 5.5 / 6.0 / 6.5 / 6.7 DoS (VMSA-2018-0018) (remote check)\",\n  \"severity\": \"Médio\",\n  \"cvss\": 6.5,\n  \"publication_date\": \"2018-07-19\"\n}\n",
+							"raw": "{\n  \"asset_hostname\": \"WORKSTATION-1\",\n  \"asset_ip_address\": \"172.18.0.1\",\n  \"title\": \"VMware ESXi 5.5 / 6.0 / 6.5 / 6.7 DoS (VMSA-2018-0018) (remote check)\",\n  \"severity\": \"Médio\",\n  \"cvss\": 6.5,\n  \"publication_date\": \"2022-12-08\"\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -228,7 +228,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "9"
+									"value": "1"
 								}
 							]
 						}
@@ -277,7 +277,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "9"
+									"value": "1"
 								}
 							]
 						}
@@ -285,7 +285,7 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "delete",
 					"request": {
 						"auth": {
 							"type": "apikey",
@@ -319,6 +319,137 @@
 									"key": "id",
 									"value": "9"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "file upload",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "Token {{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"contentType": "text/csv",
+									"type": "file",
+									"src": "/home/gabriellins/Computacao/Ofício/Empresas/Morphus/processo_seletivo/asset_vulnerability.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/vulnerabilities/csv",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vulnerabilities",
+								"csv"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "filtered list",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "Token {{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/vulnerabilities/?asset_hostname=server&publication_date=2014&order_by=cvss,desc",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"vulnerabilities",
+								""
+							],
+							"query": [
+								{
+									"key": "asset_hostname",
+									"value": "server"
+								},
+								{
+									"key": "publication_date",
+									"value": "2014"
+								},
+								{
+									"key": "order_by",
+									"value": "cvss,desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "security",
+			"item": [
+				{
+					"name": "request audit log",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "Token {{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/request_log",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"request_log"
 							]
 						}
 					},
