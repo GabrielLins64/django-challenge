@@ -106,6 +106,14 @@ class VulnerabilityList(APIView, PageNumberPagination):
     authentication_classes = [TokenAuthentication]
     swagger_tags = ['Vulnerability']
 
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            'page',
+            in_=openapi.IN_QUERY,
+            description="Pagination control",
+            type=openapi.TYPE_INTEGER
+        )
+    ])
     def get(self, request):
         """
         List all vulnerabilities.
