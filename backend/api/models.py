@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Vulnerability(models.Model):
@@ -15,3 +16,13 @@ class CVSSRatings(models.Model):
     text = models.CharField(max_length=10)
     base_score_min = models.FloatField()
     base_score_max = models.FloatField()
+
+
+class RequestAudit(models.Model):
+    endpoint = models.CharField(max_length=100, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    response_code = models.PositiveSmallIntegerField()
+    method = models.CharField(max_length=10, null=True)
+    remote_address = models.GenericIPAddressField(null=True)
+    exec_time = models.IntegerField(null=True)
+    date = models.DateTimeField(auto_now=True)
