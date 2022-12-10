@@ -1,9 +1,11 @@
 from rest_framework import permissions, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import MultiPartParser
 from django.http import HttpResponse
 from django.contrib.auth import (
     login as auth_login,
@@ -19,7 +21,9 @@ from api.models import Vulnerability
 from api.serializers import (
     VulnerabilitySerializer,
     VulnerabilityStatusSerializer,
-    UserSerializer
+    UserSerializer,
+    FileUploadSerializer,
+    VulnerabilityCSVSerializer
 )
 
 
@@ -200,3 +204,40 @@ class VulnerabilityDetail(APIView):
         vulnerability = self.get_object(pk)
         vulnerability.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UploadVulnerabilitiesCSV(APIView):
+    """
+    API View that handles Vulnerabilities inserted through
+    a CSV file upload.
+    """
+    permissions_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    swagger_tags = ['Vulnerability']
+    parser_classes = (MultiPartParser,)
+
+    @swagger_auto_schema(manual_parameters=[openapi.Parameter(
+        name="file",
+        in_=openapi.IN_FORM,
+        type=openapi.TYPE_FILE,
+        required=True,
+    )])
+    @action(detail=False, methods=['post'], parser_classes=(MultiPartParser,))
+    def post(self, request):
+        """
+        POST a CSV file with vulnerabilities.
+        """
+        serializer_context = {'request': request}
+        file_serializer = FileUploadSerializer(data=request.data,
+                                          context=serializer_context)
+        file_serializer.is_valid(raise_exception=True)
+
+        file = file_serializer.validated_data['file']
+        vulnerability_serializer = VulnerabilityCSVSerializer(file,
+                                                              context=serializer_context)
+
+        if vulnerability_serializer.is_valid():
+            vulnerability_serializer.save()
+            return Response("File successfully imported", status=status.HTTP_201_CREATED)
+
+        return Response(vulnerability_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
