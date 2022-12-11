@@ -39,11 +39,14 @@ services:
     volumes:
       - ./frontend:/code
     env_file:
-      - ./backend/.env.example
+      - ./frontend/.env.example
     networks:
       vms_network:
         ipv4_address: 10.7.0.6
-    command: sh -c "npm i --silent && npm start"
+    command: >
+      sh -c "cp .env.example .env 
+      && chown node:node .env
+      && npm i --silent && npm start"
 
 networks:
   vms_network:
