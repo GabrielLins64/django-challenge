@@ -1,15 +1,27 @@
 import { AxiosError } from "axios";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { User } from "../../interfaces/interfaces";
-import { login } from "../../utils/auth";
+import { isLoggedIn, login, retrieveLocalUser } from "../../utils/auth";
 import "./Login.css";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    testLoginStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const testLoginStatus = async () => {
+    if (await isLoggedIn()) {
+      let user = retrieveLocalUser();
+      navigate("/home", { state: { user: user } });
+    }
+  };
 
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
