@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { SyntheticEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { User } from "../../interfaces/interfaces";
 import { isLoggedIn, login, retrieveLocalUser } from "../../utils/auth";
@@ -9,10 +9,12 @@ import "./Login.css";
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     testLoginStatus();
+    testTokenExpired();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -56,6 +58,17 @@ function Login() {
       icon: "error",
       confirmButtonColor: "#9c2219",
       focusConfirm: false,
+    });
+  };
+
+  const testTokenExpired = () => {
+    if (searchParams.get("token_expired")) handleTokenExpired();
+  };
+
+  const handleTokenExpired = () => {
+    Swal.fire({
+      title: "Sessão expirada",
+      text: "Sua sessão expirou! Por favor faça login novamente.",
     });
   };
 

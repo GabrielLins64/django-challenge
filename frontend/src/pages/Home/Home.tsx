@@ -1,16 +1,41 @@
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { User } from "../../interfaces/interfaces";
-import { logout } from "../../utils/auth";
+import { isLoggedIn, logout } from "../../utils/auth";
 import "./Home.css";
 
 function Home() {
   const { state }: { state: { user: User } } = useLocation();
-  const { user }: { user: User } = state;
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      await testLoginStatus();
+      loadUser();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate("/login");
+  };
+
+  const handleExpiredLogout = () => {
+    logout();
+    navigate("/login?token_expired=true");
+  };
+
+  const testLoginStatus = async () => {
+    if (!(await isLoggedIn())) {
+      handleExpiredLogout();
+    }
+  };
+
+  const loadUser = () => {
+    let { user: locationUser }: { user: User } = state;
+    setUser(locationUser);
   };
 
   return (
