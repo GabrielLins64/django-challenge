@@ -1,0 +1,68 @@
+.whole-page-container {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  background-color: #ededed;
+}
+
+.login-form-container {
+  position: absolute;
+  margin: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
+
+.login-form {
+  border-radius: 12px;
+  background-color: #253236;
+  width: 400px;
+  text-align: center;
+  color: white;
+}
+
+.login-form > h2 {
+  padding-top: 20px;
+}
+
+.input-box {
+  padding: 15px 0;
+}
+
+.input-box > input {
+  display: block;
+  margin: 0 auto 15px auto;
+  height: 40px;
+  width: 60%;
+}
+
+.input-box > input:focus {
+  border-color: #e0e6ef;
+  box-shadow: 0 0 0 0.25rem rgba(225, 230, 238, 0.25);
+}
+
+.login-form > button {
+  margin-bottom: 25px;
+  width: 60%;
+}
+
+/* Mobile sizes */
+
+@media only screen and (max-width: 500px) {
+  .login-form {
+    width: 85vw;
+  }
+  .input-box > input, .login-form > button {
+    width: 70%;
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  .login-form {
+    width: 95vw;
+  }
+  .input-box > input, .login-form > button {
+    width: 80%;
+  }
+}
