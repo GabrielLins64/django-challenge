@@ -100,6 +100,18 @@ class Logout(APIView):
         return HttpResponse("Successfully logged out!")
 
 
+class ValidateLogin(APIView):
+    """
+    API View for checking token status.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    swagger_tags = ['Auth']
+
+    def get(self, request):
+        return Response("Your token is valid!", status=status.HTTP_200_OK)
+
+
 class VulnerabilityList(APIView, PageNumberPagination):
     """
     API View for listing all vulnerabilities or
