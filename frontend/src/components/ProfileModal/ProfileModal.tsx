@@ -20,7 +20,7 @@ function ProfileModal({ visible = false, setIsVisible, user }: ProfileModalProps
         <div className="profile-image-container">
           <img
             src={emptyUserImage}
-            alt="Empty User Image"
+            alt="Empty User"
             className="profile-image"
           />
         </div>
