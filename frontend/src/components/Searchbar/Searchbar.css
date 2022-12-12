@@ -1,0 +1,17 @@
+.search-bar-container {
+  display: inline-block;
+}
+
+.search-bar {
+  width: 350px;
+  height: 40px;
+}
+
+.search-bar > input:focus {
+  box-shadow: none;
+  border-color: initial;
+}
+
+.search-bar > button, .search-bar > input {
+  border-radius: 14px;
+}
