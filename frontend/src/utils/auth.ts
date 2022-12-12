@@ -6,19 +6,33 @@ interface LoginPayload {
   password: string;
 }
 
-export const login = async (
-  credentials: LoginPayload
-): Promise<User> => {
+export const login = async (credentials: LoginPayload): Promise<User> => {
   const apiBaseUrl = process.env.REACT_APP_API_URL;
   let loginUrl = apiBaseUrl + "login/";
 
-  return axios
-    .post(loginUrl, credentials)
-    .then((response) => {
-      let { token, user } = response.data;
-      saveAuthData(token, user);
-      return user;
-    });
+  return axios.post(loginUrl, credentials).then((response) => {
+    let { token, user } = response.data;
+    saveAuthData(token, user);
+    return user;
+  });
+};
+
+export const logout = () => {
+  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  let logoutUrl = apiBaseUrl + "logout/";
+  let token = retrieveLocalToken();
+
+  if (token) {
+    axios
+      .get(logoutUrl, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      .catch((err) => {});
+  }
+
+  clearAuthData();
 };
 
 const saveAuthData = (token: Token, user: User) => {
@@ -26,12 +40,22 @@ const saveAuthData = (token: Token, user: User) => {
   localStorage.setItem("user", JSON.stringify(user));
 };
 
-// const retrieveLocalToken = (): Token | null => {
-//   let token = localStorage.getItem('jwt');
-//   return token;
-// }
+const clearAuthData = () => {
+  localStorage.removeItem("jwt");
+  localStorage.removeItem("user");
+}
 
-// const retrieveLocalUser = (): User | null => {
-//   let user = localStorage.getItem('user');
-//   return user;
-// }
+export const retrieveLocalToken = (): Token | null => {
+  let token = localStorage.getItem("jwt");
+  return token;
+};
+
+export const retrieveLocalUser = (): User | null => {
+  let user = localStorage.getItem("user");
+
+  if (user) {
+    return JSON.parse(user);
+  }
+
+  return null;
+};
