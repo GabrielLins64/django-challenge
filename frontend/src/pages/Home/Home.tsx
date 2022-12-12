@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Navbar from "../../components/Navbar/Navbar";
 import { User } from "../../interfaces/interfaces";
 import { isLoggedIn, logout } from "../../utils/auth";
 import "./Home.css";
 
 function Home() {
   const { state }: { state: { user: User } } = useLocation();
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,15 +40,9 @@ function Home() {
   };
 
   return (
-    <>
-      <div>Home</div>
-      <p>User: {JSON.stringify(user)}</p>
-      <div>
-        <button className="btn btn-secondary" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
-    </>
+    <div className="homepage">
+      <Navbar handleLogout={handleLogout} user={user} />
+    </div>
   );
 }
 
