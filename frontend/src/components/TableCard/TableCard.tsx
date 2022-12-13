@@ -1,7 +1,7 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsRotate, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Pagination, Table } from "react-bootstrap";
+import { Button, Pagination, Table } from "react-bootstrap";
 import Searchbar from "../Searchbar/Searchbar";
 import "./TableCard.css";
 
@@ -19,6 +19,7 @@ interface TableCardProps {
   setPage?: React.Dispatch<React.SetStateAction<number>>;
   hasInsertBtn?: boolean;
   insertAction?: () => void;
+  refreshCallback?: () => void;
 }
 
 const pageSize = 50;
@@ -31,6 +32,7 @@ function TableCard({
   hasInsertBtn = false,
   setPage = () => {},
   insertAction = () => {},
+  refreshCallback = () => {},
 }: TableCardProps) {
   const rows = data.map((row, index) => {
     return (
@@ -38,8 +40,7 @@ function TableCard({
         {columns.map((column, index2) => {
           if (column?.type === "bool")
             return <td key={index2}>{row[column.key] ? "Sim" : "Não"}</td>;
-          else
-            return <td key={index2}>{row[column.key]}</td>;
+          else return <td key={index2}>{row[column.key]}</td>;
         })}
       </tr>
     );
@@ -71,15 +72,22 @@ function TableCard({
       <div className="table-card">
         <div className="table-card-header">
           <Searchbar />
-          {hasInsertBtn && (
-            <button
-              onClick={insertAction}
-              className="btn btn-outline-secondary insert-btn"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-              &ensp;Inserir
-            </button>
-          )}
+
+          <div className="table-card-header-right-controls">
+            <Button onClick={refreshCallback} variant="outline-secondary">
+              <FontAwesomeIcon icon={faArrowsRotate} />
+              &ensp;Atualizar
+            </Button>
+            {hasInsertBtn && (
+              <button
+                onClick={insertAction}
+                className="btn btn-outline-secondary insert-btn"
+              >
+                <FontAwesomeIcon icon={faPlus} />
+                &ensp;Inserir
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="table-card-box">

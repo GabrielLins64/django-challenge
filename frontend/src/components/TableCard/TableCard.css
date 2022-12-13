@@ -107,3 +107,7 @@
   border: none;
   border-radius: 50%;
 }
+
+.table-card-header-right-controls > button {
+  margin-left: 20px;
+}
