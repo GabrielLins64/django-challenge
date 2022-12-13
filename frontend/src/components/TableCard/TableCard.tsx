@@ -1,5 +1,6 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 import { Pagination, Table } from "react-bootstrap";
 import Searchbar from "../Searchbar/Searchbar";
 import "./TableCard.css";
@@ -14,17 +15,19 @@ interface TableCardProps {
   data?: Array<any>;
   totalDataCount?: number;
   currentPage?: number;
-  nextPage?: string | null;
-  previousPage?: string | null;
+  hasInsertBtn?: boolean;
+  setPage?: React.Dispatch<React.SetStateAction<number>>;
 }
+
+const pageSize = 50;
 
 function TableCard({
   columns = [],
   data = [],
   totalDataCount = 0,
   currentPage = 1,
-  nextPage = null,
-  previousPage = null,
+  hasInsertBtn = false,
+  setPage = () => {},
 }: TableCardProps) {
   const rows = data.map((row, index) => {
     return (
@@ -36,16 +39,38 @@ function TableCard({
     );
   });
 
+  const hasNextPage = (): boolean => {
+    return totalDataCount > pageSize * currentPage;
+  };
+
+  const handlePaginateNext = () => {
+    setPage(currentPage + 1);
+  };
+
+  const handlePaginatePrevious = () => {
+    setPage(currentPage - 1);
+  };
+
+  const handlePaginateFirst = () => {
+    setPage(1);
+  };
+
+  const handlePaginateLast = () => {
+    let lastPage = Math.ceil(totalDataCount / pageSize);
+    setPage(lastPage);
+  };
+
   return (
     <div className="table-card-container">
       <div className="table-card">
         <div className="table-card-header">
           <Searchbar />
-
-          <button className="btn btn-outline-secondary insert-btn">
-            <FontAwesomeIcon icon={faPlus} />
-            &ensp;Inserir
-          </button>
+          {hasInsertBtn && (
+            <button className="btn btn-outline-secondary insert-btn">
+              <FontAwesomeIcon icon={faPlus} />
+              &ensp;Inserir
+            </button>
+          )}
         </div>
 
         <div className="table-card-box">
@@ -66,17 +91,33 @@ function TableCard({
           <p>Mostrando {`${data.length} de ${totalDataCount}`} resultados</p>
           <div className="table-pagination">
             <Pagination>
-              <Pagination.First disabled={currentPage === 1} />
-              <Pagination.Prev disabled={currentPage === 1} />
-              {previousPage && (
-                <Pagination.Item>{currentPage - 1}</Pagination.Item>
+              <Pagination.First
+                onClick={handlePaginateFirst}
+                disabled={currentPage === 1}
+              />
+              <Pagination.Prev
+                onClick={handlePaginatePrevious}
+                disabled={currentPage === 1}
+              />
+              {currentPage > 1 && (
+                <Pagination.Item onClick={handlePaginatePrevious}>
+                  {currentPage - 1}
+                </Pagination.Item>
               )}
               <Pagination.Item active>{currentPage}</Pagination.Item>
-              {nextPage && (
-                <Pagination.Item>{currentPage + 1}</Pagination.Item>
+              {hasNextPage() && (
+                <Pagination.Item onClick={handlePaginateNext}>
+                  {currentPage + 1}
+                </Pagination.Item>
               )}
-              <Pagination.Next disabled={nextPage === null} />
-              <Pagination.Last disabled={nextPage === null} />
+              <Pagination.Next
+                onClick={handlePaginateNext}
+                disabled={!hasNextPage()}
+              />
+              <Pagination.Last
+                onClick={handlePaginateLast}
+                disabled={!hasNextPage()}
+              />
             </Pagination>
           </div>
         </div>

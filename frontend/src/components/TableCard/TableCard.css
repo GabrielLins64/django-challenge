@@ -71,7 +71,8 @@
 }
 
 /* Bootstrap Pagination color override */
-.pagination > li > span {
+.pagination > li > span,
+.pagination > li > a {
   background-color: white;
   color: #565656;
   border: none;
@@ -80,20 +81,27 @@
 }
 
 .pagination > li > span:focus,
-.pagination > li > span:hover {
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > a:hover {
   cursor: pointer;
   background-color: #eee;
   border-color: #ddd;
+  box-shadow: none;
+  color: black;
 }
 
-.pagination > .active > span {
+.pagination > .active > span,
+.pagination > .active > a {
   color: white;
   background-color: #565656;
   border: none;
   border-radius: 50%;
 }
 
-.pagination > .active > span:hover {
+.pagination > .active > span:hover,
+.pagination > .active > a:hover {
+  color: white;
   cursor: pointer;
   background-color: #949494;
   border: none;
