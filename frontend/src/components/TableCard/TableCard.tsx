@@ -15,8 +15,9 @@ interface TableCardProps {
   data?: Array<any>;
   totalDataCount?: number;
   currentPage?: number;
-  hasInsertBtn?: boolean;
   setPage?: React.Dispatch<React.SetStateAction<number>>;
+  hasInsertBtn?: boolean;
+  insertAction?: () => void;
 }
 
 const pageSize = 50;
@@ -28,6 +29,7 @@ function TableCard({
   currentPage = 1,
   hasInsertBtn = false,
   setPage = () => {},
+  insertAction = () => {},
 }: TableCardProps) {
   const rows = data.map((row, index) => {
     return (
@@ -66,7 +68,10 @@ function TableCard({
         <div className="table-card-header">
           <Searchbar />
           {hasInsertBtn && (
-            <button className="btn btn-outline-secondary insert-btn">
+            <button
+              onClick={insertAction}
+              className="btn btn-outline-secondary insert-btn"
+            >
               <FontAwesomeIcon icon={faPlus} />
               &ensp;Inserir
             </button>
