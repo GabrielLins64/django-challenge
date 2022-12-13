@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
-import TableCard from "../../components/TableCard/TableCard";
 import { User } from "../../interfaces/interfaces";
 import { isLoggedIn, logout } from "../../utils/auth";
+import VulnerabilityTable from "../VulnerabilityTable/VulnerabilityTable";
 import "./Home.css";
 
 function Home() {
@@ -40,76 +40,10 @@ function Home() {
     setUser(locationUser);
   };
 
-  const columns = [
-    {
-      name: "Coluna1",
-      key: "col1",
-    },
-    {
-      name: "Coluna2",
-      key: "col2",
-    },
-  ];
-
-  const data = [
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-    {
-      col1: "blabla",
-      col2: 123,
-    },
-  ]
-
   return (
     <div className="homepage">
       <Navbar handleLogout={handleLogout} user={user} />
-      <TableCard columns={columns} data={data} />
+      <VulnerabilityTable />
     </div>
   );
 }
