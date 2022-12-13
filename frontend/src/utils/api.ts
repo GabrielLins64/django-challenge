@@ -1,16 +1,18 @@
-import axios from "axios";
-import { ListResponse } from "../interfaces/interfaces";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { ListResponse, Vulnerability } from "../interfaces/interfaces";
 import { retrieveLocalToken } from "./auth";
 
 // Vulnerability Endpoints
 
-export const fetchVulnerabilitiesList = async (page: number = 1): Promise<ListResponse> => {
+export const fetchVulnerabilitiesList = async (
+  page: number = 1
+): Promise<ListResponse> => {
   const apiBaseUrl = process.env.REACT_APP_API_URL;
-  let logoutUrl = apiBaseUrl + `vulnerabilities?order_by=id,desc&page=${page}`;
+  let url = apiBaseUrl + `vulnerabilities?order_by=id,desc&page=${page}`;
   let token = retrieveLocalToken();
 
   return axios
-    .get(logoutUrl, {
+    .get(url, {
       headers: {
         Authorization: `Token ${token}`,
       },
@@ -19,4 +21,21 @@ export const fetchVulnerabilitiesList = async (page: number = 1): Promise<ListRe
     .catch((err) => {
       console.error(err);
     });
+};
+
+export const postVulnerability = async (
+  vulnerability: Vulnerability
+): Promise<AxiosResponse | AxiosError> => {
+  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  let url = apiBaseUrl + `vulnerabilities/`;
+  let token = retrieveLocalToken();
+
+  return axios
+    .post(url, vulnerability, {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    })
+    .then((res) => res)
+    .catch((err: AxiosError) => err);
 };
