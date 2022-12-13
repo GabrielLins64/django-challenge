@@ -7,10 +7,14 @@ import { User } from "../../interfaces/interfaces";
 interface ProfileModalProps {
   visible?: boolean;
   setIsVisible: (active: boolean) => void;
-  user: User | null
+  user: User | null;
 }
 
-function ProfileModal({ visible = false, setIsVisible, user }: ProfileModalProps) {
+function ProfileModal({
+  visible = false,
+  setIsVisible,
+  user,
+}: ProfileModalProps) {
   return (
     <Modal className="profile-modal" show={visible} centered>
       <Modal.Header className="justify-content-center">
@@ -26,10 +30,18 @@ function ProfileModal({ visible = false, setIsVisible, user }: ProfileModalProps
         </div>
 
         <div className="profile-content-container">
-          <p><b>Id: </b> {user?.id} </p>
-          <p><b>Usuário: </b> {user?.username} </p>
-          <p><b>Email: </b> {user?.email} </p>
-          <p><b>É admin: </b> {user?.is_staff ? "Sim" : "Não"} </p>
+          <p>
+            <b>Id: </b> {user?.id}{" "}
+          </p>
+          <p>
+            <b>Usuário: </b> {user?.username}{" "}
+          </p>
+          <p>
+            <b>Email: </b> {user?.email}{" "}
+          </p>
+          <p>
+            <b>É admin: </b> {user?.is_staff ? "Sim" : "Não"}{" "}
+          </p>
         </div>
       </Modal.Body>
 
