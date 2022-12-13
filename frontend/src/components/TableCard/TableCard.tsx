@@ -8,6 +8,7 @@ import "./TableCard.css";
 type Column = {
   name: string;
   key: string;
+  type?: string;
 };
 
 interface TableCardProps {
@@ -35,7 +36,10 @@ function TableCard({
     return (
       <tr key={index}>
         {columns.map((column, index2) => {
-          return <td key={index2}>{row[column.key]}</td>;
+          if (column?.type === "bool")
+            return <td key={index2}>{row[column.key] ? "Sim" : "Não"}</td>;
+          else
+            return <td key={index2}>{row[column.key]}</td>;
         })}
       </tr>
     );
