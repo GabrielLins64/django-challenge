@@ -39,3 +39,21 @@ export const postVulnerability = async (
     .then((res) => res)
     .catch((err: AxiosError) => err);
 };
+
+export const postVulnerabilityCSV = async (
+  fileFormData: FormData
+): Promise<AxiosResponse | AxiosError> => {
+  const apiBaseUrl = process.env.REACT_APP_API_URL;
+  let url = apiBaseUrl + `vulnerabilities/csv`;
+  let token = retrieveLocalToken();
+
+  return axios
+    .post(url, fileFormData, {
+      headers: {
+        Authorization: `Token ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => res)
+    .catch((err: AxiosError) => err);
+};
