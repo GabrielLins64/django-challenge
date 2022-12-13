@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 import { User } from "../../interfaces/interfaces";
-import { isLoggedIn, logout } from "../../utils/auth";
+import { isLoggedIn, logout, retrieveLocalUser } from "../../utils/auth";
 import VulnerabilityTable from "../VulnerabilityTable/VulnerabilityTable";
 import "./Home.css";
 
@@ -36,8 +36,14 @@ function Home() {
   };
 
   const loadUser = () => {
-    let { user: locationUser }: { user: User } = state;
-    setUser(locationUser);
+    try {
+      let { user: locationUser }: { user: User } = state;
+      setUser(locationUser);
+    } catch {
+      let retrievedUser = retrieveLocalUser();
+      if (retrievedUser) setUser(retrievedUser);
+      else handleExpiredLogout();
+    }
   };
 
   return (
